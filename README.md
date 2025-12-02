@@ -1,5 +1,14 @@
+[![MIT license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat" )](http://choosealicense.com/licenses/mit/)
+[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?style=flat-square&logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
+
+
+
 # utils
 Various utilities
+
+<details>
+
+<summary>hcl2json.py</summary>
 
 ## hcl2json.py
 A python script to parse HCL and convert to JSON.
@@ -33,3 +42,4 @@ python3 hcl2json.py --tf **/terraform.tf
 ```
 This will report the `terraform` settings for all `terraform.tf` files recursivly
 
+</details>
