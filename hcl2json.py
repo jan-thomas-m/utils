@@ -5,6 +5,7 @@ Reads HCL from a file or stdin and writes JSON to stdout or an output file.
 
 Depends on: python-hcl2 (install via `pip install python-hcl2`)
 """
+
 from __future__ import annotations
 
 import argparse
@@ -15,8 +16,11 @@ from typing import Optional
 
 try:
     import hcl2
-except Exception as e:  # pragma: no cover - friendly import error
-    print("Error: missing dependency 'python-hcl2'. Install with: python3 -m pip install python-hcl2", file=sys.stderr)
+except Exception:  # pragma: no cover - friendly import error
+    print(
+        "Error: missing dependency 'python-hcl2'. Install with: python3 -m pip install python-hcl2",
+        file=sys.stderr,
+    )
     raise
 
 
@@ -385,7 +389,9 @@ def _print_aws_version_output(ver, rel_path: Optional[str], multiple: bool) -> N
         print(f"{rel_path}: {ver}")
     else:
         # keep previous behavior of labeling single-file/stdout output
-        print(f"Required AWS version: {ver}{'' if str(ver).endswith(chr(10)) else chr(10)}")
+        print(
+            f"Required AWS version: {ver}{'' if str(ver).endswith(chr(10)) else chr(10)}"
+        )
 
 
 def _process_stdin(args) -> int:
@@ -399,7 +405,10 @@ def _process_stdin(args) -> int:
     try:
         text = sys.stdin.read()
         if not text:
-            print("Reading from stdin but nothing was provided. Provide HCL on stdin or use -i.", file=sys.stderr)
+            print(
+                "Reading from stdin but nothing was provided. Provide HCL on stdin or use -i.",
+                file=sys.stderr,
+            )
             return 2
         data = parse_hcl_text(text)
     except Exception as exc:
@@ -417,7 +426,10 @@ def _process_stdin(args) -> int:
     if args.tf:
         req_version, providers = extract_terraform_info(data)
         if req_version is None and not providers:
-            print("Error: terraform required_version/required_providers not found", file=sys.stderr)
+            print(
+                "Error: terraform required_version/required_providers not found",
+                file=sys.stderr,
+            )
             return 6
         parts = []
         if req_version:
@@ -481,7 +493,9 @@ def _process_files(args, input_files: list[str]) -> int:
         if args.aws_version:
             ver = extract_aws_provider_version(data)
             if ver is None:
-                print(f"Error: aws provider version not found in {path}", file=sys.stderr)
+                print(
+                    f"Error: aws provider version not found in {path}", file=sys.stderr
+                )
                 continue
             if len(input_files) > 1:
                 print(f"{rel_path}: {ver}")
@@ -492,7 +506,10 @@ def _process_files(args, input_files: list[str]) -> int:
         if args.tf:
             req_version, providers = extract_terraform_info(data)
             if req_version is None and not providers:
-                print(f"Error: terraform required_version/required_providers not found in {path}", file=sys.stderr)
+                print(
+                    f"Error: terraform required_version/required_providers not found in {path}",
+                    file=sys.stderr,
+                )
                 continue
             parts = []
             if req_version:
@@ -514,7 +531,9 @@ def _process_files(args, input_files: list[str]) -> int:
             suffix = "\n" if len(input_files) > 1 and out_path is None else ""
             _write_json(json_text + suffix, out_path)
         except Exception as exc:
-            print(f"Error: failed to write JSON output for {path}: {exc}", file=sys.stderr)
+            print(
+                f"Error: failed to write JSON output for {path}: {exc}", file=sys.stderr
+            )
             return 5
 
     return 0
@@ -522,13 +541,28 @@ def _process_files(args, input_files: list[str]) -> int:
 
 def main(argv: Optional[list[str]] = None) -> int:
     parser = argparse.ArgumentParser(description="Convert HCL (v2) to JSON")
-    parser.add_argument("-i", "--input", help="Input HCL file path. If omitted reads from stdin.")
-    parser.add_argument("-o", "--output", help="Output JSON file path. If omitted writes to stdout.")
-    parser.add_argument("--pretty", action="store_true", help="Pretty-print JSON with indentation")
-    parser.add_argument("--aws-version", action="store_true", dest="aws_version",
-                        help="Print only the terraform required_providers aws.version value and exit")
-    parser.add_argument("--tf", "--terraform", action="store_true", dest="tf",
-                        help="Print terraform required_version and required_providers source/version on one line and exit")
+    parser.add_argument(
+        "-i", "--input", help="Input HCL file path. If omitted reads from stdin."
+    )
+    parser.add_argument(
+        "-o", "--output", help="Output JSON file path. If omitted writes to stdout."
+    )
+    parser.add_argument(
+        "--pretty", action="store_true", help="Pretty-print JSON with indentation"
+    )
+    parser.add_argument(
+        "--aws-version",
+        action="store_true",
+        dest="aws_version",
+        help="Print only the terraform required_providers aws.version value and exit",
+    )
+    parser.add_argument(
+        "--tf",
+        "--terraform",
+        action="store_true",
+        dest="tf",
+        help="Print terraform required_version and required_providers source/version on one line and exit",
+    )
 
     args, extras = parser.parse_known_args(argv)
 
@@ -542,7 +576,10 @@ def main(argv: Optional[list[str]] = None) -> int:
 
     # If multiple input files and a single output file was requested, avoid clobbering
     if input_files and args.output and len(input_files) > 1:
-        print("Error: when providing multiple input files, do not specify a single -o/--output file", file=sys.stderr)
+        print(
+            "Error: when providing multiple input files, do not specify a single -o/--output file",
+            file=sys.stderr,
+        )
         return 7
 
     if input_files is None:
@@ -553,4 +590,3 @@ def main(argv: Optional[list[str]] = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
